@@ -1,0 +1,113 @@
+
+
+# 8
+
+#a
+#Skriv en klasse for land. Et land har et navn, en befolkning og et areal. 
+#Befolkning og areal skal ha default-verdier som sier at de ikke er satt enda. 
+#Navn skal ikke ha default-verdi. 
+
+class Land: 
+    def __init__(self, navn, befolkning=0, areal=0):
+        self.navn = navn
+        self.befolkning = befolkning
+        self.areal = areal
+#b
+#Skriv en __str__ metode for klassen Land. Denne metoden skal 
+#returnere en streng som inneholder navn, befolkning og areal til landet.  
+    def __str__(self): 
+        return f"Navn :{self.navn}, Befolkning: {self.befolkning}, Areal: {self.areal}"
+
+#c
+#Skriv en metode for klassen Land som regner ut og returnerer 
+#befolkningstettheten til landet. Befolkningstetthet er befolkning delt på areal. 
+    def tetthet(self): 
+        tetthet = self.befolkning/self.areal
+        return tetthet
+
+#d
+#Skriv en funksjon som tar inn to land, sjekker hvilket som har høyest 
+#befolkning, og returnerer landet som har høyest befolkning av de to.
+def storst_befolkning(land1, land2): 
+    if land1.befolkning > land2.befolkning:
+        return land1
+    else:
+        return land2
+
+#e
+#Les inn CSV-fila befolkning_tabell_csv.txt. Lag et Land-objekt for hver linje 
+#i fila, med navn og befolkning gitt av fila, men hvor arealet ikke er satt 
+#enda (bruk default verdi). Legg alle landene i et dictionary med navn som nøkkel 
+#og Land-objektet som verdi
+def readBefolkning(): 
+    file = open("befolkning_tabell_csv.txt", "r")
+    landDict = {}
+    for line in file:
+        navn, befolkning = line.split(";")
+        befolkning = int(befolkning)
+        land = Land(navn,befolkning)
+        landDict[navn] = land
+    file.close()
+    return landDict
+
+#f
+#Les inn CSV-fila areal_tabell_csv.txt. For hver linje sjekk om du finner navnet på landet i 
+#dictionariet fra forrige deloppgave. Hvis du finner navnet, sett arealet til Land-objektet lik 
+#arealet fra denne fila. Hvis du ikke finner landet i dictionariet, skriv ut navnet på landet og at 
+#du ikke finner det. 
+def readAreal(landDict): 
+    file = open("areal_tabell_csv.txt", "r")
+    for line in file:
+        navn, areal = line.split(";")
+        areal = int(areal)
+        if navn in landDict:
+            landDict[navn].areal = areal
+        else:
+            print(f"Landet {navn} er ikke i dictionary!")
+    file.close()
+    return landDict
+
+#g
+#Skriv ut alle landene som har både befolkning og areal. Gå gjennom dictionariet og skriv ut 
+#alle verdiene (objekter av klassen land) hvor både befolkning og areal er satt. Skriv også ut 
+#befolkningstetthet for landene. Er det land som mangler areal, skriv ut at dette landet ikke 
+#har satt areal. 
+def loopOgPrint(landDict): 
+    for key in landDict:
+        land = landDict[key]
+        if land.befolkning > 0 and land.areal > 0:
+            print(f"{land} Tetthet: {str(land.tetthet())}")
+        else:
+            print(f"{land.navn} har ikke satt areal!")
+
+#h
+#Finn hvilket land som har høyest befolkningstetthet. Du kan gjøre dette gjennom å gå 
+#gjennom alle landene. Sjekk først at landet har både befolkning og areal. Hvis det mangler 
+#minst en av de to, hopp over det landet. Lag variabler for foreløpig høyeste 
+#befolkningstetthet og landet som har denne befolkningstettheten. For hvert land sjekker du 
+#om dette landet har høyere befolkningstetthet enn det foreløpig høyeste. Hvis 
+#befolkningstettheten er høyere, erstatt både maks befolkningstetthet og land-referansen 
+#med dette landet sine tall. 
+def storstTetthet(landDict):
+    firstrun = True
+    for key in landDict:
+        land = landDict[key]
+        if firstrun:
+            storst = land
+            firstrun = False
+        else:
+            if land.befolkning > 0 and land.areal > 0:
+                if land.tetthet() > storst.tetthet():
+                    storst = land
+            else:
+                print(f"{land.navn} har ikke satt areal eller befolkning!")
+    print(f"{storst.navn} har høyest befolkningstetthet")
+
+
+if __name__ == "__main__":
+    landDict = readBefolkning() #e
+    landDict = readAreal((landDict)) #f
+    print()
+    loopOgPrint(landDict) #g
+    print()
+    storstTetthet(landDict) #h
